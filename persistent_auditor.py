@@ -7,7 +7,32 @@
 # 2) Instead of tracking products and its quantity, this script will only track new stock quantities
 
 failed_inputs = 0
-new_processed = 0
+
+def load_inventory():
+    try:
+        with open("inventory.txt","r") as file:
+            try:
+                content = file.read().split("\n")
+                # content[0] is inventory value
+                # content[1] is history array
+                hist = content[1].strip("[]").split(",")
+                cleaned_hist = [int(item) for item in hist]
+                return int(content[0]), cleaned_hist # return the inventory value and history
+            except ValueError: # Error reading inventory file (either corrupted or empty)
+                return 0, []
+    except FileNotFoundError: # Inventory file not exists
+        return 0, []
+    
+
+def save_inventory(total_stocks, new_intake):
+    try:
+        # open/create inv file. Overwrite with new data
+        with open("inventory.txt","w") as file:
+            file.write(f"{total_stocks}\n{new_intake}")
+    except Exception as error_code:
+        fail = f"Something went wrong\nError message: {error_code}"
+        print(fail)
+    return
 
 def get_valid_input():
     new = input(f"Current inventory count: {inventory}\nPlease input how many stocks we received today: ")
@@ -58,13 +83,15 @@ while True:
             else:
                 inventory = total
                 taxes = calculate_tax(prompt)
-                new_processed += prompt
+                history.append(prompt) # Add new stock into history
                 print(f'Added {prompt} into the inventory.\nNew inventory count: {inventory}\n')
                 print(f'Newly added stocks cost ${taxes:.2f} in taxes.\n')
     
     if inventory > 500:
         print("---ALERT!!!---\nYou have exceeded the maximum limit for this stock. The program will now exit.")
         break
+save_inventory(inventory,history)
+
 
 report = generate_report(inventory, failed_inputs)
 print(report)
