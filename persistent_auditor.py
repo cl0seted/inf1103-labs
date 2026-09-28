@@ -3,10 +3,9 @@
 ########################
 # Due to ambiguous or unspecified requirements in the labsheet,
 # this code makes the following assumptions:
-# 1) "One delivery" contains only one stock unit
-# 2) One stock unit costs $250, and tax does not include any other fees
+# 1) This script will deviate from the sample output provided in Week 4 Labsheet
+# 2) Instead of tracking products and its quantity, this script will only track new stock quantities
 
-inventory = 0
 failed_inputs = 0
 new_processed = 0
 
@@ -41,10 +40,13 @@ def generate_report(total_units, failed_attempts):
     final_report = f'Total units processed: {total_units}\nNumber of failed inputs this session: {failed_attempts}\n\nQuitting program...'
     return final_report
 
+# Initialize inventory var and history list; get value from txt
+inventory, history = load_inventory()
+
 while True:
     prompt = get_valid_input()
     match prompt:
-        case False:
+        case False: # Quit signal received
             break
         case None:
             failed_inputs += 1
