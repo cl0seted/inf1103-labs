@@ -35,7 +35,15 @@ def update_stock(): # takes PID
     return
 
 def search_product(): # takes PID
-    return
+    query = input("Enter a valid Product ID: ").upper()
+    # if query.upper() not in inventory
+    for item in products:
+        if query == item["prodID"]:
+            print(f"ID\tName\t\tPrice\tQuantity")
+            for i in item: print(item[i], end="\t")
+            return
+    print("Invalid Product ID.")
+    return 
 
 def display_all():
     # print all items in array; formatted
@@ -48,22 +56,49 @@ def load_inventory(): # loads products from .json file
     return
 
 def program_menu(): # Function that handles program options
+    menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
+    print(menu_options)
+    while True:
+        try: choice = int(input("\nSelect option: "))
+        except ValueError:
+            print(menu_options)
+            continue
+
+        match choice:
+            case 1:
+                print(products) # to be fleshed out
+            case 2:
+                create_add_product(*get_valid_input())
+            case 4:
+                search_product()
+            case 6:
+                break
+            case _: # default case
+                print(menu_options)
     return
 
-def get_valid_input():
-    name = input("Enter product name: ")
+def priceInput():
     while True:
         try: 
             price = float(input("Enter product price: "))
             break
         except ValueError: 
             print("Your price must be a valid number!")
+    return price
+
+def stockInput():
     while True:
         try: 
             stock = int(input("Enter stock quanity: "))
             break
         except ValueError: 
             print("Stock must be a valid integer!")
+    return stock
+
+def get_valid_input():
+    name = input("Enter product name: ")
+    price = priceInput()
+    stock = stockInput()
     return name, price, stock 
 
 # new_product = {
@@ -74,8 +109,5 @@ def get_valid_input():
 # }
 
 
-# select option 1
-print(products)
-create_add_product(*get_valid_input())
-print("=====================")
-print(products)
+program_menu()
+# search_product()
