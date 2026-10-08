@@ -1,12 +1,18 @@
 import json
-# deleted_ids = ["P0004","P0005","P0006"]
-# inventory = [
-#     {"prodID":"P0001", "name":"Digital Piano","price":300,"stock":20},
-#     {"prodID":"P0002", "name":"Electric Guitar","price":150,"stock":10},
-#     {"prodID":"P0003", "name":"Kalimba","price":25,"stock":7},
-# ]
 
-def save_inventory(package):
+def save_inventory(inventory,deleted_ids):
+    package = {
+        "inventory":inventory,
+        "deleted":deleted_ids 
+    }
+    try:
+        # open/create inv file. Overwrite with new data
+        with open("./inventory.json","w") as file:
+            json.dump(package, file, indent=4)
+            print("Succesfully saved to inventory.json")
+    except Exception as error_code:
+        fail = f"Something went wrong\nError message: {error_code}"
+        print(fail)
     return
 
 def load_inventory():
@@ -24,27 +30,6 @@ def load_inventory():
         print(f"{fail}\n Initializing empty inventory")
         return {"inventory": [], "deleted": []}
         
-
-savefile = load_inventory()
-inventory = savefile["inventory"]
-deleted_ids = savefile["deleted"]
-
-print(inventory)
-print(deleted_ids)
-
-def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
-    #gets current id index
-    currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
-    
-    #icr by 1
-    currentID += 1
-    
-    #format as ID
-    newID = "P" + f"{currentID:04d}"
-    while newID in deleted:
-        currentID +=1 
-        newID = "P" + f"{currentID:04d}"
-    return newID
 
 def create_add_product(name, price, stock): # takes user input, creates dict for new item
     new_product =  {
@@ -92,6 +77,8 @@ def display_product(product=""):
             print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
     else:
         product = pid_lookup() # returns a dictionary product
+        if product == False:
+            return
         print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
         print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
     return
@@ -115,6 +102,8 @@ def program_menu(): # Function that handles program options
                 update_stock()
             case 4:
                 display_product()
+            case 5:
+                save_inventory(inventory,deleted_ids)
             case 6:
                 break
             case _: # default case
@@ -147,4 +136,23 @@ def get_valid_input():
 
 
 
-# program_menu()
+savefile = load_inventory()
+inventory = savefile["inventory"]
+deleted_ids = savefile["deleted"]
+
+def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
+    #gets current id index
+    currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
+    
+    #icr by 1
+    currentID += 1
+    
+    #format as ID
+    newID = "P" + f"{currentID:04d}"
+    while newID in deleted:
+        currentID +=1 
+        newID = "P" + f"{currentID:04d}"
+    return newID
+
+
+program_menu()
