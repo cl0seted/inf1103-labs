@@ -1,9 +1,36 @@
-deleted_ids = ["P0004","P0005","P0006"]
-inventory = [
-    {"prodID":"P0001", "name":"Digital Piano","price":300,"stock":20},
-    {"prodID":"P0002", "name":"Electric Guitar","price":150,"stock":10},
-    {"prodID":"P0003", "name":"Kalimba","price":25,"stock":7},
-]
+import json
+# deleted_ids = ["P0004","P0005","P0006"]
+# inventory = [
+#     {"prodID":"P0001", "name":"Digital Piano","price":300,"stock":20},
+#     {"prodID":"P0002", "name":"Electric Guitar","price":150,"stock":10},
+#     {"prodID":"P0003", "name":"Kalimba","price":25,"stock":7},
+# ]
+
+def save_inventory(package):
+    return
+
+def load_inventory():
+    try:
+        with open("inventory.json","r") as file:
+            try:
+                my_dict = json.load(file)
+                return my_dict
+            except ValueError as error_code: # Error reading inventory file (either corrupted or empty)
+                fail = f"Something went wrong - 1\nError message: {error_code}"
+                print(f"{fail}\n Initializing empty inventory")
+                return {"inventory": [], "deleted": []}
+    except FileNotFoundError as error_code: # Inventory file not exists
+        fail = f"Something went wrong - 2\nError message: {error_code}"
+        print(f"{fail}\n Initializing empty inventory")
+        return {"inventory": [], "deleted": []}
+        
+
+savefile = load_inventory()
+inventory = savefile["inventory"]
+deleted_ids = savefile["deleted"]
+
+print(inventory)
+print(deleted_ids)
 
 def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
     #gets current id index
@@ -69,11 +96,6 @@ def display_product(product=""):
         print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
     return
 
-def save_inventory(): # takes the array with products
-    return
-
-def load_inventory(): # loads products from .json file
-    return
 
 def program_menu(): # Function that handles program options
     menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
@@ -123,14 +145,6 @@ def get_valid_input():
     stock = stockInput()
     return name, price, stock 
 
-# new_product = {
-#     "prodID": "P0001", # product ID
-#     "name": "Potato", # Product name 
-#     "price": 500.00, # Price in 2dp
-#     "stock": 10 # Product quantity
-# }
 
 
-program_menu()
-# search_product()
-# print(display_product())
+# program_menu()
