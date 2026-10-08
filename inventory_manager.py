@@ -141,11 +141,15 @@ inventory = savefile["inventory"]
 deleted_ids = savefile["deleted"]
 
 def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
-    #gets current id index
-    currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
     
-    #icr by 1
-    currentID += 1
+    #gets current id index
+    
+    if(len(inventory)) == 0:
+        currentID = 1
+    else:
+        currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
+        #icr by 1
+        currentID += 1
     
     #format as ID
     newID = "P" + f"{currentID:04d}"
