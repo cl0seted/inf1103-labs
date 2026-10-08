@@ -1,13 +1,13 @@
 deleted_ids = ["P0004","P0005","P0006"]
-products = [
+inventory = [
     {"prodID":"P0001", "name":"Digital Piano","price":300,"stock":20},
     {"prodID":"P0002", "name":"Electric Guitar","price":150,"stock":10},
     {"prodID":"P0003", "name":"Kalimba","price":25,"stock":7},
 ]
 
-def generate_ID(deleted=deleted_ids, inventory=products): # returns a new unique ID
+def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
     #gets current id index
-    currentID = int(products[len(products)-1]["prodID"].strip('P'))
+    currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
     
     #icr by 1
     currentID += 1
@@ -26,27 +26,47 @@ def create_add_product(name, price, stock): # takes user input, creates dict for
         "price": price,
         "stock": stock
     }
-    products.append(new_product)
+    inventory.append(new_product)
     return
     # return # return new item (dict) OR automatically append to list, return none
 
 def update_stock(): # takes PID
-    # index the array for matching PID
+    product = pid_lookup()
+    if product == False:
+        return
+    # if this point is reached, product is valid
+    print(f"Updating quantity of {product["name"]}")
+    new = stockInput()
+    product["stock"] = new
+
+    ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
+    print("Product updated")
     return
 
-def search_product(): # takes PID
+def pid_lookup():
     query = input("Enter a valid Product ID: ").upper()
-    # if query.upper() not in inventory
-    for item in products:
+    for item in inventory:
         if query == item["prodID"]:
-            print(f"ID\tName\t\tPrice\tQuantity")
-            for i in item: print(item[i], end="\t")
-            return
+            return item # returns product dictionary
     print("Invalid Product ID.")
+    return False
+
+def search_product(): # takes PID
+    product = pid_lookup()
+    print(f"ID\tName\t\tPrice\tQuantity")
+    for i in product: print(product[i], end="\t")
     return 
 
-def display_all():
-    # print all items in array; formatted
+def display_product(product=""):
+    # print("-" * 20)
+    if product == "all":
+        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+        for product in inventory:
+            print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
+    else:
+        product = pid_lookup() # returns a dictionary product
+        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+        print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
     return
 
 def save_inventory(): # takes the array with products
@@ -66,11 +86,13 @@ def program_menu(): # Function that handles program options
 
         match choice:
             case 1:
-                print(products) # to be fleshed out
+                display_product("all")
             case 2:
                 create_add_product(*get_valid_input())
+            case 3:
+                update_stock()
             case 4:
-                search_product()
+                display_product()
             case 6:
                 break
             case _: # default case
@@ -111,3 +133,4 @@ def get_valid_input():
 
 program_menu()
 # search_product()
+# print(display_product())
