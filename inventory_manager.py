@@ -175,6 +175,11 @@ def load_inventory():
 def create_add_product(name, price, stock): # takes user input, creates dict for new item
     new_product = Product(generate_ID(), name, price, stock)
     inventory.add_product(new_product)
+    print("Product has been added.")
+    
+    printHeader()
+    new_product.display_information()
+    pause_program()
     return
 
 
@@ -224,7 +229,8 @@ def update_stock(): # takes PID
     new = stockInput()
     product.stock = new
 
-    print("Product updated")
+    print("Product has been updated")
+    printHeader()
     product.display_information()
     pause_program()
     return
