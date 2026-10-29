@@ -10,12 +10,12 @@ def stockInput():
     return stock
 
 # create a class for products
-class product:
+class Product:
     def __init__(self, prodID:str, name:str, price:float, stock:int):
         self.prodID = prodID
         self.name = name
         self.price = price
-        self.stock
+        self.stock = stock
 
     def update_stock(self, quanity:int) -> None:
         print(f"Updating quantity of {self.name}")
@@ -25,20 +25,43 @@ class product:
         ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
         print("Product updated")
 
-### OLD UPDATE STOCK FUNCTION ###
-### change to lookup for existing calss
-# def update_stock(): # takes PID
-#     product = pid_lookup()
-#     if product == False:
-#         return
-#     # if this point is reached, product is valid
-#     print(f"Updating quantity of {product["name"]}")
-#     new = stockInput()
-#     product["stock"] = new
 
-#     ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
-#     print("Product updated")
-#     return
+
+class Inventory:
+    def __init__(self):
+        self.items = [] # array to keep all child classes
+
+    def add_product(self, product: Product) -> None:
+        self.items.append(product) 
+
+    def search_product(self, query:str) -> None:
+        for i in self.items:
+            if query.upper() == i.prodID:
+                print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+                print(f"{i.prodID:<5} | {i.name:<15} | ${i.price:<8.2f}| {i.stock:<4}")
+                return
+        print("Invalid Product ID.")
+            
+    
+    def display_all(self) -> None:
+        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+        for i in self.items:
+            print(f"{i.prodID:<5} | {i.name:<15} | ${i.price:<8.2f}| {i.stock:<4}")
+
+
+# --- TEMP PLACEHOLDER FOR REFERENCE ---
+inventory = Inventory()
+product1 = Product("P001", "Laptop", 1200.00, 15) # creating product from Product class, via init
+product2 = Product("P002", "Mouse", 25.50, 40)
+inventory.add_product(product1) # pass the product to inventory class to store in a list
+inventory.add_product(product2)
+
+inventory.search_product("p001")
+# inventory.display_all()
+
+
+# for i in inventory.items:
+#     print(i.name)
 
 def save_inventory(inventory,deleted_ids):
     package = {
@@ -83,20 +106,6 @@ def create_add_product(name, price, stock): # takes user input, creates dict for
     # return # return new item (dict) OR automatically append to list, return none
 
 
-def pid_lookup():
-    query = input("Enter a valid Product ID: ").upper()
-    for item in inventory:
-        if query == item["prodID"]:
-            return item # returns product dictionary
-    print("Invalid Product ID.")
-    return False
-
-def search_product(): # takes PID
-    product = pid_lookup()
-    print(f"ID\tName\t\tPrice\tQuantity")
-    for i in product: print(product[i], end="\t")
-    return 
-
 def display_product(product=""):
     # print("-" * 20)
     if product == "all":
@@ -110,7 +119,6 @@ def display_product(product=""):
         print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
         print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
     return
-
 
 
 def priceInput():
@@ -129,29 +137,26 @@ def get_valid_input():
     stock = stockInput()
     return name, price, stock 
 
+# def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
+#     #gets current id index
+#     if(len(inventory)) == 0:
+#         currentID = 1
+#     else:
+#         currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
+#         #icr by 1
+#         currentID += 1
 
+#     #format as ID
+#     newID = "P" + f"{currentID:04d}"
+#     while newID in deleted:
+#         currentID +=1 
+#         newID = "P" + f"{currentID:04d}"
+#     return newID
 
-savefile = load_inventory()
-inventory = savefile["inventory"]
-deleted_ids = savefile["deleted"]
+# savefile = load_inventory()
+# inventory = savefile["inventory"]
+# deleted_ids = savefile["deleted"]
 
-def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
-    
-    #gets current id index
-    
-    if(len(inventory)) == 0:
-        currentID = 1
-    else:
-        currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
-        #icr by 1
-        currentID += 1
-    
-    #format as ID
-    newID = "P" + f"{currentID:04d}"
-    while newID in deleted:
-        currentID +=1 
-        newID = "P" + f"{currentID:04d}"
-    return newID
 
 def program_menu(): # Function that handles program options
     menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
@@ -180,4 +185,33 @@ def program_menu(): # Function that handles program options
     return
 
 
-program_menu()
+# program_menu()
+
+
+# def update_stock(): # takes PID
+#     product = pid_lookup()
+#     if product == False:
+#         return
+#     # if this point is reached, product is valid
+#     print(f"Updating quantity of {product["name"]}")
+#     new = stockInput()
+#     product["stock"] = new
+
+#     ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
+#     print("Product updated")
+#     return
+
+
+# def pid_lookup():
+#     query = input("Enter a valid Product ID: ").upper()
+#     for item in inventory:
+#         if query == item["prodID"]:
+#             return item # returns product dictionary
+#     print("Invalid Product ID.")
+#     return False
+
+# def search_product(): # takes PID
+#     product = pid_lookup()
+#     print(f"ID\tName\t\tPrice\tQuantity")
+#     for i in product: print(product[i], end="\t")
+#     return 
