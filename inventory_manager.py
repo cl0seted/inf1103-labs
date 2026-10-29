@@ -1,5 +1,8 @@
 import json
 
+def printHeader():
+    print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+
 def stockInput():
     while True:
         try: 
@@ -25,6 +28,8 @@ class Product:
         ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
         print("Product updated")
 
+    def display_information(self) -> None:
+        print(f"{self.prodID:<5} | {self.name:<15} | ${self.price:<8.2f}| {self.stock:<4}")
 
 
 class Inventory:
@@ -37,26 +42,28 @@ class Inventory:
     def search_product(self, query:str) -> None:
         for i in self.items:
             if query.upper() == i.prodID:
-                print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
-                print(f"{i.prodID:<5} | {i.name:<15} | ${i.price:<8.2f}| {i.stock:<4}")
+                printHeader()
+                i.display_information()
                 return
         print("Invalid Product ID.")
             
     
     def display_all(self) -> None:
-        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
+        printHeader()
         for i in self.items:
-            print(f"{i.prodID:<5} | {i.name:<15} | ${i.price:<8.2f}| {i.stock:<4}")
+            i.display_information()
 
+
+deleted_ids = []
 
 # --- TEMP PLACEHOLDER FOR REFERENCE ---
 inventory = Inventory()
-product1 = Product("P001", "Laptop", 1200.00, 15) # creating product from Product class, via init
-product2 = Product("P002", "Mouse", 25.50, 40)
+product1 = Product("P0001", "Laptop", 1200.00, 15) # creating product from Product class, via init
+product2 = Product("P0002", "Mouse", 25.50, 40)
 inventory.add_product(product1) # pass the product to inventory class to store in a list
 inventory.add_product(product2)
 
-inventory.search_product("p001")
+# inventory.search_product("p0003")
 # inventory.display_all()
 
 
@@ -95,15 +102,9 @@ def load_inventory():
         
 
 def create_add_product(name, price, stock): # takes user input, creates dict for new item
-    new_product =  {
-        "prodID": generate_ID(),
-        "name": name,
-        "price": price,
-        "stock": stock
-    }
-    inventory.append(new_product)
+    new_product = Product(generate_ID(), name, price, stock)
+    inventory.add_product(new_product)
     return
-    # return # return new item (dict) OR automatically append to list, return none
 
 
 def display_product(product=""):
@@ -137,21 +138,21 @@ def get_valid_input():
     stock = stockInput()
     return name, price, stock 
 
-# def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new unique ID
-#     #gets current id index
-#     if(len(inventory)) == 0:
-#         currentID = 1
-#     else:
-#         currentID = int(inventory[len(inventory)-1]["prodID"].strip('P'))
-#         #icr by 1
-#         currentID += 1
+def generate_ID(deleted=deleted_ids, inventory=inventory.items): # returns a new unique ID
+    #gets current id index
+    if(len(inventory)) == 0:
+        currentID = 1
+    else:
+        currentID = int(inventory[len(inventory)-1].prodID.strip('P'))
+        #icr by 1
+        currentID += 1
 
-#     #format as ID
-#     newID = "P" + f"{currentID:04d}"
-#     while newID in deleted:
-#         currentID +=1 
-#         newID = "P" + f"{currentID:04d}"
-#     return newID
+    #format as ID
+    newID = "P" + f"{currentID:04d}"
+    while newID in deleted:
+        currentID +=1 
+        newID = "P" + f"{currentID:04d}"
+    return newID
 
 # savefile = load_inventory()
 # inventory = savefile["inventory"]
@@ -169,7 +170,8 @@ def program_menu(): # Function that handles program options
 
         match choice:
             case 1:
-                display_product("all")
+                # display_product("all")
+                inventory.display_all()
             case 2:
                 create_add_product(*get_valid_input())
             case 3:
@@ -185,7 +187,9 @@ def program_menu(): # Function that handles program options
     return
 
 
-# program_menu()
+program_menu()
+
+# print(generate_ID())
 
 
 # def update_stock(): # takes PID
