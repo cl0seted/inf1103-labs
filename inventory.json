@@ -1,0 +1,37 @@
+{
+    "inventory": [
+        {
+            "prodID": "P0001",
+            "name": "Digital Piano",
+            "price": 500.0,
+            "stock": 10
+        },
+        {
+            "prodID": "P0002",
+            "name": "Electric Guitra",
+            "price": 150.0,
+            "stock": 15
+        },
+        {
+            "prodID": "P0003",
+            "name": "Ukulele",
+            "price": 30.0,
+            "stock": 2
+        },
+        {
+            "prodID": "P0004",
+            "name": "Otomatone",
+            "price": 159.99,
+            "stock": 27
+        },
+        {
+            "prodID": "P0006",
+            "name": "Shamisen",
+            "price": 122.99,
+            "stock": 15
+        }
+    ],
+    "deleted": [
+        "P0005"
+    ]
+}
