@@ -74,15 +74,12 @@ class Inventory:
             i.display_information()
         pause_program()
 
-
-deleted_ids = []
-
 # --- TEMP PLACEHOLDER FOR REFERENCE ---
-inventory = Inventory()
-product1 = Product("P0001", "Laptop", 1200.00, 15) # creating product from Product class, via init
-product2 = Product("P0002", "Mouse", 25.50, 40)
-inventory.add_product(product1) # pass the product to inventory class to store in a list
-inventory.add_product(product2)
+# inventory = Inventory()
+# product1 = Product("P0001", "Laptop", 1200.00, 15) # creating product from Product class, via init
+# product2 = Product("P0002", "Mouse", 25.50, 40)
+# inventory.add_product(product1) # pass the product to inventory class to store in a list
+# inventory.add_product(product2)
 
 # test = inventory.search_product("p0003")
 # print(test)
@@ -95,6 +92,53 @@ inventory.add_product(product2)
 
 # print(vars(product1))
 # print(product1.to_dict())
+
+# savefile = load_inventory()
+# inventory = savefile["inventory"]
+# deleted_ids = savefile["deleted"]
+
+class FileHandling:
+    def __init__(self):
+        self.path = "./inventory.json"
+
+    def save_inventory(self, deleted_ids:list):
+        package = {
+            "inventory": [
+            item.to_dict() for item in inventory.items
+            ],
+            "deleted": deleted_ids
+        }
+        try:
+            with open(self.path, "w") as file:
+                json.dump(package, file, indent=4)
+                print("Successfully saved to inventory.json")
+        except Exception as error_code:
+            fail = f"Something went wrong\nError message: {error_code}"
+            print(fail)
+
+    def load_inventory(self):
+        try:
+            with open(self.path, "r") as file:
+                package = json.load(file)
+        except ValueError as error: # Error reading inventory (corrupted or empty)
+            print(f"Could not load inventory: {error}\n. Starting empty")
+            package = {"inventory": [], "deleted": []}
+        
+        except FileNotFoundError:
+            print(f"Inventory file not found. Starting empty")
+            package = {"inventory": [], "deleted": []}
+        
+        inventory = Inventory()
+
+        for data in package["inventory"]:
+            inventory.add_product(Product.from_dict(data))
+
+        deleted_ids = package["deleted"]
+        
+        return inventory, deleted_ids
+
+storage = FileHandling()
+inventory, deleted_ids = storage.load_inventory()
 
 def save_inventory(deleted_ids):
     
@@ -220,14 +264,15 @@ class MainMenu:
                     result.display_information()
                     pause_program()
             case 5:
-                save_inventory(inventory,deleted_ids)
+                # save_inventory(inventory,deleted_ids)
+                storage.save_inventory(deleted_ids)
             case 6:
                 self.is_running = False
             case _: # default case
                 self.display_menu()
 
-# menu = MainMenu()
-# menu.run()
+menu = MainMenu()
+menu.run()
 
 # def program_menu(): # Function that handles program options
 #     menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
