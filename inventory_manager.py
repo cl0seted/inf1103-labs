@@ -39,13 +39,14 @@ class Inventory:
     def add_product(self, product: Product) -> None:
         self.items.append(product) 
 
-    def search_product(self, query:str) -> None:
+    def search_product(self, query:str) -> False | Product:
         for i in self.items:
             if query.upper() == i.prodID:
-                printHeader()
-                i.display_information()
-                return
-        print("Invalid Product ID.")
+                # printHeader()
+                # i.display_information()
+                return i
+        print("Invalid Product ID")
+        return False
             
     
     def display_all(self) -> None:
@@ -63,7 +64,8 @@ product2 = Product("P0002", "Mouse", 25.50, 40)
 inventory.add_product(product1) # pass the product to inventory class to store in a list
 inventory.add_product(product2)
 
-# inventory.search_product("p0003")
+# test = inventory.search_product("p0003")
+# print(test)
 # inventory.display_all()
 
 
@@ -107,21 +109,6 @@ def create_add_product(name, price, stock): # takes user input, creates dict for
     return
 
 
-def display_product(product=""):
-    # print("-" * 20)
-    if product == "all":
-        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
-        for product in inventory:
-            print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
-    else:
-        product = pid_lookup() # returns a dictionary product
-        if product == False:
-            return
-        print(f"{'ID':<5} | {'Name':<15} | {'Price':<8} | {'Quantity':<4}")
-        print(f"{product["prodID"]:<5} | {product["name"]:<15} | ${product["price"]:<8.2f}| {product["stock"]:<4}")
-    return
-
-
 def priceInput():
     while True:
         try: 
@@ -154,6 +141,24 @@ def generate_ID(deleted=deleted_ids, inventory=inventory.items): # returns a new
         newID = "P" + f"{currentID:04d}"
     return newID
 
+def pid_lookup():
+    query = input("Enter a valid Product ID: ").upper()
+    search_result = inventory.search_product(query)
+    return search_result
+
+def update_stock(): # takes PID
+    product = pid_lookup()
+    if product == False:
+        return
+    # if this point is reached, product is valid
+    print(f"Updating quantity of {product.name}")
+    new = stockInput()
+    product.stock = new
+
+    print("Product updated")
+    product.display_information()
+    return
+
 # savefile = load_inventory()
 # inventory = savefile["inventory"]
 # deleted_ids = savefile["deleted"]
@@ -177,7 +182,9 @@ def program_menu(): # Function that handles program options
             case 3:
                 update_stock()
             case 4:
-                display_product()
+                if (result := pid_lookup()) is not False:
+                    printHeader()
+                    result.display_information()
             case 5:
                 save_inventory(inventory,deleted_ids)
             case 6:
@@ -188,34 +195,3 @@ def program_menu(): # Function that handles program options
 
 
 program_menu()
-
-# print(generate_ID())
-
-
-# def update_stock(): # takes PID
-#     product = pid_lookup()
-#     if product == False:
-#         return
-#     # if this point is reached, product is valid
-#     print(f"Updating quantity of {product["name"]}")
-#     new = stockInput()
-#     product["stock"] = new
-
-#     ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
-#     print("Product updated")
-#     return
-
-
-# def pid_lookup():
-#     query = input("Enter a valid Product ID: ").upper()
-#     for item in inventory:
-#         if query == item["prodID"]:
-#             return item # returns product dictionary
-#     print("Invalid Product ID.")
-#     return False
-
-# def search_product(): # takes PID
-#     product = pid_lookup()
-#     print(f"ID\tName\t\tPrice\tQuantity")
-#     for i in product: print(product[i], end="\t")
-#     return 
