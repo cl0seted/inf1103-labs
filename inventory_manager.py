@@ -31,6 +31,23 @@ class Product:
         ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
         print("Product updated")
 
+    def to_dict(self) -> dict:
+        return {
+            "prodID": self.prodID,
+            "name": self.name,
+            "price": self.price,
+            "stock": self.stock
+        }
+
+    @classmethod
+    def from_dict(cls, data:dict) -> "Product":
+        return cls(
+            prodID = data["prodID"],
+            name = data["name"],
+            price = data["price"],
+            stock = data["stock"]
+        )
+
     def display_information(self) -> None:
         print(f"{self.prodID:<5} | {self.name:<15} | ${self.price:<8.2f}| {self.stock:<4}")
 
@@ -71,11 +88,16 @@ inventory.add_product(product2)
 # print(test)
 # inventory.display_all()
 
-
 # for i in inventory.items:
-#     print(i.name)
+#     test_array.append(i.to_dict())
 
-def save_inventory(inventory,deleted_ids):
+# print(test_array)
+
+# print(vars(product1))
+# print(product1.to_dict())
+
+def save_inventory(deleted_ids):
+    
     package = {
         "inventory":inventory,
         "deleted":deleted_ids 
@@ -204,8 +226,8 @@ class MainMenu:
             case _: # default case
                 self.display_menu()
 
-menu = MainMenu()
-menu.run()
+# menu = MainMenu()
+# menu.run()
 
 # def program_menu(): # Function that handles program options
 #     menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
