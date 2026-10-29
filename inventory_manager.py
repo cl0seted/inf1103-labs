@@ -12,6 +12,9 @@ def stockInput():
             print("Stock must be a valid integer!")
     return stock
 
+def pause_program():
+    input("Press enter to continue:")
+
 # create a class for products
 class Product:
     def __init__(self, prodID:str, name:str, price:float, stock:int):
@@ -48,11 +51,11 @@ class Inventory:
         print("Invalid Product ID")
         return False
             
-    
     def display_all(self) -> None:
         printHeader()
         for i in self.items:
             i.display_information()
+        pause_program()
 
 
 deleted_ids = []
@@ -101,7 +104,7 @@ def load_inventory():
         fail = f"Something went wrong - 2\nError message: {error_code}"
         print(f"{fail}\n Initializing empty inventory")
         return {"inventory": [], "deleted": []}
-        
+
 
 def create_add_product(name, price, stock): # takes user input, creates dict for new item
     new_product = Product(generate_ID(), name, price, stock)
@@ -157,25 +160,33 @@ def update_stock(): # takes PID
 
     print("Product updated")
     product.display_information()
+    pause_program()
     return
 
 # savefile = load_inventory()
 # inventory = savefile["inventory"]
 # deleted_ids = savefile["deleted"]
 
+class MainMenu:
+    def __init__ (self):
+        self.is_running = True
 
-def program_menu(): # Function that handles program options
-    menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
-    print(menu_options)
-    while True:
-        try: choice = int(input("\nSelect option: "))
-        except ValueError:
-            print(menu_options)
-            continue
+    def display_menu(self):
+        menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""    
+        print(menu_options)
 
+    def run(self):
+        self.display_menu()
+        while self.is_running:
+            try: choice = int(input("\nSelect option: "))
+            except ValueError:
+                self.display_menu()
+                continue
+            self.choice_handler(choice)
+    
+    def choice_handler(self, choice):
         match choice:
             case 1:
-                # display_product("all")
                 inventory.display_all()
             case 2:
                 create_add_product(*get_valid_input())
@@ -185,13 +196,45 @@ def program_menu(): # Function that handles program options
                 if (result := pid_lookup()) is not False:
                     printHeader()
                     result.display_information()
+                    pause_program()
             case 5:
                 save_inventory(inventory,deleted_ids)
             case 6:
-                break
+                self.is_running = False
             case _: # default case
-                print(menu_options)
-    return
+                self.display_menu()
+
+menu = MainMenu()
+menu.run()
+
+# def program_menu(): # Function that handles program options
+#     menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
+#     print(menu_options)
+#     while True:
+#         try: choice = int(input("\nSelect option: "))
+#         except ValueError:
+#             print(menu_options)
+#             continue
+
+#         match choice:
+#             case 1:
+#                 # display_product("all")
+#                 inventory.display_all()
+#             case 2:
+#                 create_add_product(*get_valid_input())
+#             case 3:
+#                 update_stock()
+#             case 4:
+#                 if (result := pid_lookup()) is not False:
+#                     printHeader()
+#                     result.display_information()
+#             case 5:
+#                 save_inventory(inventory,deleted_ids)
+#             case 6:
+#                 break
+#             case _: # default case
+#                 print(menu_options)
+#     return
 
 
-program_menu()
+# program_menu()
