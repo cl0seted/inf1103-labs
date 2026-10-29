@@ -1,5 +1,45 @@
 import json
 
+def stockInput():
+    while True:
+        try: 
+            stock = int(input("Enter stock quanity: "))
+            break
+        except ValueError: 
+            print("Stock must be a valid integer!")
+    return stock
+
+# create a class for products
+class product:
+    def __init__(self, prodID:str, name:str, price:float, stock:int):
+        self.prodID = prodID
+        self.name = name
+        self.price = price
+        self.stock
+
+    def update_stock(self, quanity:int) -> None:
+        print(f"Updating quantity of {self.name}")
+        new = stockInput()
+        self.stock = new
+
+        ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
+        print("Product updated")
+
+### OLD UPDATE STOCK FUNCTION ###
+### change to lookup for existing calss
+# def update_stock(): # takes PID
+#     product = pid_lookup()
+#     if product == False:
+#         return
+#     # if this point is reached, product is valid
+#     print(f"Updating quantity of {product["name"]}")
+#     new = stockInput()
+#     product["stock"] = new
+
+#     ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
+#     print("Product updated")
+#     return
+
 def save_inventory(inventory,deleted_ids):
     package = {
         "inventory":inventory,
@@ -42,18 +82,6 @@ def create_add_product(name, price, stock): # takes user input, creates dict for
     return
     # return # return new item (dict) OR automatically append to list, return none
 
-def update_stock(): # takes PID
-    product = pid_lookup()
-    if product == False:
-        return
-    # if this point is reached, product is valid
-    print(f"Updating quantity of {product["name"]}")
-    new = stockInput()
-    product["stock"] = new
-
-    ### TODO: PLACEHOLDER FOR DISPLAY FUNCTION
-    print("Product updated")
-    return
 
 def pid_lookup():
     query = input("Enter a valid Product ID: ").upper()
@@ -84,31 +112,6 @@ def display_product(product=""):
     return
 
 
-def program_menu(): # Function that handles program options
-    menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
-    print(menu_options)
-    while True:
-        try: choice = int(input("\nSelect option: "))
-        except ValueError:
-            print(menu_options)
-            continue
-
-        match choice:
-            case 1:
-                display_product("all")
-            case 2:
-                create_add_product(*get_valid_input())
-            case 3:
-                update_stock()
-            case 4:
-                display_product()
-            case 5:
-                save_inventory(inventory,deleted_ids)
-            case 6:
-                break
-            case _: # default case
-                print(menu_options)
-    return
 
 def priceInput():
     while True:
@@ -119,14 +122,6 @@ def priceInput():
             print("Your price must be a valid number!")
     return price
 
-def stockInput():
-    while True:
-        try: 
-            stock = int(input("Enter stock quanity: "))
-            break
-        except ValueError: 
-            print("Stock must be a valid integer!")
-    return stock
 
 def get_valid_input():
     name = input("Enter product name: ")
@@ -157,6 +152,32 @@ def generate_ID(deleted=deleted_ids, inventory=inventory): # returns a new uniqu
         currentID +=1 
         newID = "P" + f"{currentID:04d}"
     return newID
+
+def program_menu(): # Function that handles program options
+    menu_options = """\n----- MENU -----\n1. Display all products\n2. Add new product\n3. Update product stock\n4. Product ID lookup\n5. Save inventory\n6. Exit program"""
+    print(menu_options)
+    while True:
+        try: choice = int(input("\nSelect option: "))
+        except ValueError:
+            print(menu_options)
+            continue
+
+        match choice:
+            case 1:
+                display_product("all")
+            case 2:
+                create_add_product(*get_valid_input())
+            case 3:
+                update_stock()
+            case 4:
+                display_product()
+            case 5:
+                save_inventory(inventory,deleted_ids)
+            case 6:
+                break
+            case _: # default case
+                print(menu_options)
+    return
 
 
 program_menu()
