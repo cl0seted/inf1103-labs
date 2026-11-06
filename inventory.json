@@ -47,6 +47,14 @@
             "price": 199.99,
             "stock": 10,
             "download_size": 297
+        },
+        {
+            "prodID": "P0008",
+            "type": "digital",
+            "name": "Grand Piano VST Suite",
+            "price": 250.0,
+            "stock": 23,
+            "download_size": 598
         }
     ],
     "deleted": [
