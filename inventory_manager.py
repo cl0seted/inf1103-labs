@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import json
 
 def printHeader():
@@ -16,7 +17,7 @@ def pause_program():
     input("Press enter to continue:")
 
 # create a class for products
-class Product:
+class Product(ABC):
     def __init__(self, prodID:str, name:str, price:float, stock:int):
         self.prodID = prodID
         self.name = name
@@ -32,23 +33,105 @@ class Product:
     def to_dict(self) -> dict:
         return {
             "prodID": self.prodID,
+            "type": appendType(self),
             "name": self.name,
             "price": self.price,
             "stock": self.stock
         }
 
     @classmethod
-    def from_dict(cls, data:dict) -> "Product":
+    def from_dict(cls, data:dict):
+
+        product_type = data["type"]
+
+        if product_type == "physical":
+            return PhysicalProduct.from_dict(data)
+
+        if product_type == "digital":
+            return DigitalProduct.from_dict(data)
+
+        else:
+            raise ValueError(f"Unknown product type: {product_type}")
+
+    @abstractmethod
+    def display_information(self) -> None:
+        productinfo = f"{self.prodID:<5} | {self.name:<15} | ${self.price:<8.2f}| {self.stock:<8}"
+        # print(productinfo)
+        return productinfo
+
+    @abstractmethod
+    def get_fulfilment_info(self):
+        pass
+
+class CanBeShipped(ABC):
+    @abstractmethod
+    def calculate_shipping_cost(self):
+        pass
+
+class PhysicalProduct(Product, CanBeShipped):
+    def __init__(self, prodID:str, name:str, price:float, stock:int, weight:float):
+        super().__init__(prodID, name, price, stock) # steals details from parent class
+        self.weight = weight
+
+    def display_information(self) -> None:
+        productinfo = super().display_information()
+        extrainfo = f" | --- Product weight  : {self.weight}kg / unit"
+        productinfo += extrainfo
+        print(f"{productinfo}")
+    
+    @classmethod
+    def from_dict(cls, data:dict) -> PhysicalProduct:
         return cls(
             prodID = data["prodID"],
             name = data["name"],
             price = data["price"],
-            stock = data["stock"]
+            stock = data["stock"],
+            weight = data["weight"]
         )
 
-    def display_information(self) -> None:
-        print(f"{self.prodID:<5} | {self.name:<15} | ${self.price:<8.2f}| {self.stock:<4}")
+    def get_fulfilment_info(self):
+        return "I am a product that must be shipped"
 
+    def calculate_shipping_cost(self):
+        cost = round(self.weight * 0.7,2) # shipping cost is 10%, tax is 7%
+        return cost
+    
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["weight"] = self.weight
+        return data
+
+
+
+class DigitalProduct(Product):
+    def __init__(self, prodID:str, name:str, price:float, stock:int, download_size:int):
+        super().__init__(prodID, name, price, stock) # steals details from parent class
+        self.download_size = download_size
+
+    def display_information(self) -> None:
+        productinfo = super().display_information()
+        extrainfo = f" | --- Product filesize: {self.download_size} Mb"
+        productinfo += extrainfo
+        print(f"{productinfo}")
+        return
+
+    @classmethod
+    def from_dict(cls, data:dict) -> DigitalProduct:
+        return cls(
+            prodID = data["prodID"],
+            name = data["name"],
+            price = data["price"],
+            stock = data["stock"],
+            download_size = data["download_size"]
+        )
+
+    def get_fulfilment_info(self):
+        return "I am a product that must be downloaded"
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["download_size"] = self.download_size
+        return data
 
 class Inventory:
     def __init__(self):
@@ -69,6 +152,9 @@ class Inventory:
         for i in self.items:
             i.display_information()
         pause_program()
+
+def appendType(item):
+    return item.__class__.__name__.lower().replace("product","")
 
 
 class FileHandling:
@@ -114,9 +200,13 @@ class FileHandling:
 storage = FileHandling()
 inventory, deleted_ids = storage.load_inventory()
 
-
-def create_add_product(name, price, stock): # takes user input, creates dict for new item
-    new_product = Product(generate_ID(), name, price, stock)
+def create_add_product(name, product_type, price, stock, size): # takes user input, creates dict for new item
+    
+    if product_type == "physical":
+        new_product = PhysicalProduct(generate_ID(), name, price, stock, size) #MISSING WEIGHT
+    if product_type == "digital":
+        new_product = DigitalProduct(generate_ID(), name, price, stock, size) #MISSING FILESIZE
+    
     inventory.add_product(new_product)
     print("Product has been added.")
     
@@ -135,12 +225,40 @@ def priceInput():
             print("Your price must be a valid number!")
     return price
 
+def sizeInput(product_type):
+    while True:
+        if product_type == "physical":
+            prompt = "Enter product weight in kilograms: "
+            try: 
+                size = float(input(prompt))
+                break
+            except ValueError: 
+                print("Please input a value up to two decimal places.")
+
+        if product_type == "digital":
+            prompt = "Enter product filesize in megabytes: "
+            try: 
+                size = int(input(prompt))
+                break
+            except ValueError: 
+                print("Please input a valid integer.")
+    return size
+
 
 def get_valid_input():
+    match input("Enter product type: [P]hysical [D]igital\nChoice: ").lower():
+        case "p":
+            product_type = "physical"
+        case "d":
+            product_type = "digital"
+        case _:
+            print("Defaulting to product type: Physical")
+            product_type = "physical"
     name = input("Enter product name: ")
+    size = sizeInput(product_type)
     price = priceInput()
     stock = stockInput()
-    return name, price, stock 
+    return name, product_type, price, stock, size
 
 def generate_ID(deleted=deleted_ids, inventory=inventory.items): # returns a new unique ID
     #gets current id index
@@ -201,6 +319,7 @@ class MainMenu:
                 self.is_running = False
             case _: # default case
                 self.display_menu()
+
 
 menu = MainMenu()
 menu.run()

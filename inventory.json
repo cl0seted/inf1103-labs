@@ -2,33 +2,51 @@
     "inventory": [
         {
             "prodID": "P0001",
+            "type": "physical",
             "name": "Digital Piano",
             "price": 500.0,
-            "stock": 10
+            "stock": 10,
+            "weight": 11.2
         },
         {
             "prodID": "P0002",
+            "type": "physical",
             "name": "Electric Guitra",
             "price": 150.0,
-            "stock": 15
+            "stock": 15,
+            "weight": 3.6
         },
         {
             "prodID": "P0003",
+            "type": "physical",
             "name": "Ukulele",
             "price": 30.0,
-            "stock": 2
+            "stock": 2,
+            "weight": 0.6
         },
         {
             "prodID": "P0004",
+            "type": "physical",
             "name": "Otomatone",
             "price": 159.99,
-            "stock": 27
+            "stock": 27,
+            "weight": 0.35
         },
         {
             "prodID": "P0006",
+            "type": "physical",
             "name": "Shamisen",
             "price": 122.99,
-            "stock": 15
+            "stock": 15,
+            "weight": 1.5
+        },
+        {
+            "prodID": "P0007",
+            "type": "digital",
+            "name": "FL Studio",
+            "price": 199.99,
+            "stock": 10,
+            "download_size": 297
         }
     ],
     "deleted": [
